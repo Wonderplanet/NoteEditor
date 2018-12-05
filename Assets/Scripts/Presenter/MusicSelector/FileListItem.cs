@@ -52,7 +52,7 @@ namespace NoteEditor.Presenter
 
             itemTypeIcon.sprite = fileItemInfo.isDirectory
                 ? directoryIcon
-                : System.IO.Path.GetExtension(itemName) == ".wav"
+                : (System.IO.Path.GetExtension(itemName) == ".wav" || System.IO.Path.GetExtension(itemName) == ".ogg")
                     ? musicFileIcon
                     : otherFileIcon;
         }
