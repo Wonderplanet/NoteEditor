@@ -21,6 +21,7 @@ namespace NoteEditor.DTO
             public int num;
             public int block;
             public int type;
+            public string attributes;
             public List<Note> notes;
         }
     }

@@ -6,6 +6,7 @@ using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using SFB;
 
 namespace NoteEditor.Presenter
 {
@@ -27,6 +28,14 @@ namespace NoteEditor.Presenter
         Button loadButton;
         [SerializeField]
         MusicLoader musicLoader;
+        [SerializeField]
+        Button openButton;
+
+        ExtensionFilter extensionFilter = new ExtensionFilter()
+        {
+            Name = "Valid Music Files",
+            Extensions = new string[] { "ogg", "wav" }
+        };
 
         void Start()
         {
@@ -36,46 +45,60 @@ namespace NoteEditor.Presenter
             redoButton.OnClickAsObservable().Subscribe(_ => ChangeLocationCommandManager.Redo());
 
             Settings.WorkSpacePath
-                .Subscribe(workSpacePath => directoryPathInputField.text = Path.Combine(workSpacePath, "Musics"));
+                    .Subscribe(workSpacePath => { if(!string.IsNullOrEmpty(workSpacePath)) directoryPathInputField.text = Path.Combine(workSpacePath, "Musics"); });
 
             directoryPathInputField.OnValueChangedAsObservable()
-                .Subscribe(path => MusicSelector.DirectoryPath.Value = path);
+                                   .Subscribe(path => 
+            {
+                if (!string.IsNullOrEmpty(path))
+                {
+                    MusicSelector.DirectoryPath.Value = System.IO.Path.GetDirectoryName(path);
+                    MusicSelector.SelectedFileName.Value = System.IO.Path.GetFileName(path);
+                }
+            });
 
-            MusicSelector.DirectoryPath
-                .Subscribe(path => directoryPathInputField.text = path);
+            //MusicSelector.DirectoryPath
+                //.Subscribe(path => directoryPathInputField.text = path);
 
-            var isUndoRedoAction = false;
+            openButton.OnClickAsObservable()
+                      .Subscribe(_ =>
+            {
+                var candidates = StandaloneFileBrowser.OpenFilePanel("Select Music File", "", new ExtensionFilter[] { extensionFilter }, false);
+                directoryPathInputField.text = candidates.Length > 0 ? candidates[0] : directoryPathInputField.text;
+            }).AddTo(gameObject);
 
-            MusicSelector.DirectoryPath
-                .Where(path => Directory.Exists(path))
-                .Buffer(2, 1)
-                .Where(_ => isUndoRedoAction ? (isUndoRedoAction = false) : true)
-                .Select(b => new { prev = b[0], current = b[1] })
-                .Subscribe(path => ChangeLocationCommandManager.Do(new Command(
-                    () => { },
-                    () => { isUndoRedoAction = true; MusicSelector.DirectoryPath.Value = path.prev; },
-                    () => { isUndoRedoAction = true; MusicSelector.DirectoryPath.Value = path.current; })));
+            //var isUndoRedoAction = false;
 
-            Observable.Timer(TimeSpan.FromMilliseconds(300), TimeSpan.Zero)
-                .Where(_ => Directory.Exists(MusicSelector.DirectoryPath.Value))
-                .Select(_ => new DirectoryInfo(MusicSelector.DirectoryPath.Value))
-                .Select(directoryInfo =>
-                    directoryInfo.GetDirectories().Select(directory => new FileItemInfo(true, directory.FullName))
-                        .Concat(directoryInfo.GetFiles().Select(file => new FileItemInfo(false, file.FullName)))
-                        .ToList())
-                .Where(x => !x.Select(item => item.fullName)
-                    .SequenceEqual(MusicSelector.FilePathList.Value.Select(item => item.fullName)))
-                .Subscribe(filePathList => MusicSelector.FilePathList.Value = filePathList);
+            //MusicSelector.DirectoryPath
+                //.Where(path => Directory.Exists(path))
+                //.Buffer(2, 1)
+                //.Where(_ => isUndoRedoAction ? (isUndoRedoAction = false) : true)
+                //.Select(b => new { prev = b[0], current = b[1] })
+                //.Subscribe(path => ChangeLocationCommandManager.Do(new Command(
+                    //() => { },
+                    //() => { isUndoRedoAction = true; MusicSelector.DirectoryPath.Value = path.prev; },
+                    //() => { isUndoRedoAction = true; MusicSelector.DirectoryPath.Value = path.current; })));
 
-            MusicSelector.FilePathList.AsObservable()
-                .Do(_ => Enumerable.Range(0, fileItemContainerTransform.childCount)
-                    .Select(i => fileItemContainerTransform.GetChild(i))
-                    .ToList()
-                    .ForEach(child => DestroyObject(child.gameObject)))
-                .SelectMany(fileItemList => fileItemList)
-                .Select(fileItemInfo => new { fileItemInfo, obj = Instantiate(fileItemPrefab) as GameObject })
-                .Do(elm => elm.obj.transform.SetParent(fileItemContainer.transform))
-                .Subscribe(elm => elm.obj.GetComponent<FileListItem>().SetInfo(elm.fileItemInfo));
+            //Observable.Timer(TimeSpan.FromMilliseconds(300), TimeSpan.Zero)
+                //.Where(_ => Directory.Exists(MusicSelector.DirectoryPath.Value))
+                //.Select(_ => new DirectoryInfo(MusicSelector.DirectoryPath.Value))
+                //.Select(directoryInfo =>
+                //    directoryInfo.GetDirectories().Select(directory => new FileItemInfo(true, directory.FullName))
+                //        .Concat(directoryInfo.GetFiles().Select(file => new FileItemInfo(false, file.FullName)))
+                //        .ToList())
+                //.Where(x => !x.Select(item => item.fullName)
+                //    .SequenceEqual(MusicSelector.FilePathList.Value.Select(item => item.fullName)))
+                //.Subscribe(filePathList => MusicSelector.FilePathList.Value = filePathList);
+
+            //MusicSelector.FilePathList.AsObservable()
+                //.Do(_ => Enumerable.Range(0, fileItemContainerTransform.childCount)
+                //    .Select(i => fileItemContainerTransform.GetChild(i))
+                //    .ToList()
+                //    .ForEach(child => DestroyObject(child.gameObject)))
+                //.SelectMany(fileItemList => fileItemList)
+                //.Select(fileItemInfo => new { fileItemInfo, obj = Instantiate(fileItemPrefab) as GameObject })
+                //.Do(elm => elm.obj.transform.SetParent(fileItemContainer.transform))
+                //.Subscribe(elm => elm.obj.GetComponent<FileListItem>().SetInfo(elm.fileItemInfo));
 
             loadButton.OnClickAsObservable()
                 .Select(_ => MusicSelector.SelectedFileName.Value)
