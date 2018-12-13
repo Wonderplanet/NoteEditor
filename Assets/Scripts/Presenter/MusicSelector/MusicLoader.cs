@@ -36,7 +36,7 @@ namespace NoteEditor.Presenter
                 else
                 {
                     EditData.Name.Value = fileName;
-                    LoadEditData();
+                    //LoadEditData();
                     Audio.OnLoad.OnNext(Unit.Default);
                 }
             }

@@ -3,6 +3,7 @@ using System.IO;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using SFB;
 
 namespace NoteEditor.Presenter
 {
@@ -29,6 +30,16 @@ namespace NoteEditor.Presenter
 
             Settings.WorkSpacePath.DistinctUntilChanged()
                 .Subscribe(path => workSpacePathInputField.text = path);
+
+        }
+
+        public void OpenSelectFolderWindow()
+        {
+            var paths = StandaloneFileBrowser.OpenFolderPanel("Select Workspace Folder", workSpacePathInputField.text, false);
+            if(paths.Length > 0)
+            {
+                workSpacePathInputField.text = paths[0];
+            }
         }
     }
 }

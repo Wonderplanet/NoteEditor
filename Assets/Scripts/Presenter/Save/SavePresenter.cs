@@ -7,6 +7,7 @@ using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using SFB;
 
 namespace NoteEditor.Presenter
 {
@@ -108,12 +109,19 @@ namespace NoteEditor.Presenter
         {
             var fileName = Path.ChangeExtension(EditData.Name.Value, "json");
             var directoryPath = Path.Combine(Path.GetDirectoryName(MusicSelector.DirectoryPath.Value), "Notes");
-            var filePath = Path.Combine(directoryPath, fileName);
 
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+            var candidatePath = StandaloneFileBrowser.SaveFilePanel("Save Data", directoryPath, fileName, new ExtensionFilter[] { new ExtensionFilter("json", new string[] { "json" }) });
+
+            var filePath = candidatePath;
+
+            //var filePath = Path.Combine(directoryPath, fileName);
+
+
+
+            //if (!Directory.Exists(directoryPath))
+            //{
+            //    Directory.CreateDirectory(directoryPath);
+            //}
 
             var json = EditDataSerializer.Serialize();
             File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);

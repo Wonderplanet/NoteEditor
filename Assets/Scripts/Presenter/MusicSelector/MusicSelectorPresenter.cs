@@ -105,10 +105,10 @@ namespace NoteEditor.Presenter
                 .Where(fileName => !string.IsNullOrEmpty(fileName))
                 .Subscribe(fileName => musicLoader.Load(fileName));
 
-            if (!Directory.Exists(MusicSelector.DirectoryPath.Value))
-            {
-                Directory.CreateDirectory(MusicSelector.DirectoryPath.Value);
-            }
+            //if (!Directory.Exists(MusicSelector.DirectoryPath.Value))
+            //{
+            //    Directory.CreateDirectory(MusicSelector.DirectoryPath.Value);
+            //}
         }
     }
 }
