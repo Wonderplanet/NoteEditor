@@ -109,10 +109,15 @@ namespace NoteEditor.Presenter
         {
             var fileName = Path.ChangeExtension(EditData.Name.Value, "json");
             var directoryPath = Path.Combine(Path.GetDirectoryName(MusicSelector.DirectoryPath.Value), "Notes");
-
+            if (!string.IsNullOrEmpty(EditData.FileName.Value))
+            {
+                fileName = Path.GetFileName(EditData.FileName.Value);
+                directoryPath = Path.GetDirectoryName(EditData.FileName.Value);
+            }
             var candidatePath = StandaloneFileBrowser.SaveFilePanel("Save Data", directoryPath, fileName, new ExtensionFilter[] { new ExtensionFilter("json", new string[] { "json" }) });
 
             var filePath = candidatePath;
+            EditData.FileName.Value = filePath;
 
             //var filePath = Path.Combine(directoryPath, fileName);
 

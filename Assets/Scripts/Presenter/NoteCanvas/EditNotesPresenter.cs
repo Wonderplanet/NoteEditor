@@ -45,11 +45,15 @@ namespace NoteEditor.Presenter
                     else
                     {
                         RequestForEditNote.OnNext(
-                           new Note(
-                               NoteCanvas.ClosestNotePosition.Value,
-                               EditState.NoteType.Value,
-                               NotePosition.None,
-                               EditState.LongNoteTailPosition.Value));
+                           new Note()
+                           {
+                               position = NoteCanvas.ClosestNotePosition.Value,
+                               type = EditState.NoteType.Value,
+                               next = NotePosition.None,
+                               prev = EditState.LongNoteTailPosition.Value,
+                               attributes = (NoteAttributes)(EditState.AttributeType.Value),
+                               direction = (NoteDirection)(EditState.DirectionVector.Value),
+                           });
                     }
                 });
 
@@ -60,11 +64,15 @@ namespace NoteEditor.Presenter
                 .Where(_ => KeyInput.ShiftKey())
                 .Do(_ => EditState.NoteType.Value = NoteTypes.Long)
                 .Subscribe(_ => RequestForAddNote.OnNext(
-                    new Note(
-                        NoteCanvas.ClosestNotePosition.Value,
-                        NoteTypes.Long,
-                        NotePosition.None,
-                        NotePosition.None)));
+                    new Note()
+                    {
+                        position = NoteCanvas.ClosestNotePosition.Value,
+                        type = NoteTypes.Long,
+                        prev = NotePosition.None,
+                        next = NotePosition.None,
+                        attributes = (NoteAttributes)(EditState.AttributeType.Value),
+                        direction = (NoteDirection)(EditState.DirectionVector.Value),
+                    }));
 
 
             // Finish editing long note by press-escape or right-click

@@ -54,6 +54,12 @@ namespace NoteEditor.Notes
                 .Where(editType => editType == noteType.Value)
                 .Subscribe(_ => editPresenter.RequestForRemoveNote.OnNext(note)));
 
+            disposable.Add(mouseDownObservable.Subscribe(_ => 
+            {
+                EditState.DirectionVector.Value = (int)(note.direction); 
+                EditState.AttributeType.Value = (int)(note.attributes); 
+            }));
+
             disposable.Add(mouseDownObservable.Where(editType => editType == NoteTypes.Long)
                 .Where(editType => editType == noteType.Value)
                 .Subscribe(_ =>
@@ -73,7 +79,17 @@ namespace NoteEditor.Notes
                         if (EditData.Notes.ContainsKey(note.prev) && !EditData.Notes.ContainsKey(note.next))
                             EditState.LongNoteTailPosition.Value = note.prev;
 
-                        editPresenter.RequestForRemoveNote.OnNext(new Note(note.position, EditState.NoteType.Value, note.next, note.prev));
+                        editPresenter
+                            .RequestForRemoveNote
+                            .OnNext(new Note() 
+                            { 
+                                position = note.position, 
+                                type = EditState.NoteType.Value,
+                                next = note.next,
+                                prev = note.prev,
+                                attributes = (NoteAttributes)EditState.AttributeType.Value,
+                                direction = (NoteDirection)EditState.DirectionVector.Value
+                            });
                         RemoveLink();
                     }
                 }));

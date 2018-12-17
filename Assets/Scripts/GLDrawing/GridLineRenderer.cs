@@ -67,7 +67,7 @@ namespace NoteEditor.GLDrawing
                         cachedZeroSamplePosX = currentX;
                     }
 
-
+                    //Debug.Log(EditData.MaxBlock.Value);
                     if (blockLines.Length != EditData.MaxBlock.Value)
                     {
                         blockLines = Enumerable.Range(0, EditData.MaxBlock.Value)

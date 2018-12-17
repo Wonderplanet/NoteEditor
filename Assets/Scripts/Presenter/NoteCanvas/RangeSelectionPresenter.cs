@@ -41,7 +41,11 @@ namespace NoteEditor.Presenter
                 .Do(_ => { if (!Audio.IsPlaying.Value) Deselect(); })
                 .SelectMany(rect => GetNotesWithin(rect))
                 .Do(kv => selectedNoteObjects[kv.Key] = kv.Value)
-                .Subscribe(kv => kv.Value.isSelected.Value = true);
+                .Subscribe(kv =>
+                { 
+                    if(kv.Value != null)
+                        kv.Value.isSelected.Value = true; 
+                });
 
 
             // All select by Ctrl-A
@@ -102,13 +106,22 @@ namespace NoteEditor.Presenter
                     validNotes.ToObservable()
                         .Select(note =>
                             note.type == NoteTypes.Single
-                                ? new Note(note.position.Add(0, note.position.LPB * beatDiff, 0))
-                                : new Note(
-                                    note.position.Add(0, note.position.LPB * beatDiff, 0),
-                                    note.type,
-                                    note.next.Add(0, note.next.LPB * beatDiff, 0),
-                                    note.prev.Add(0, note.prev.LPB * beatDiff, 0)
-                                ))
+                                ? new Note()
+                                {
+                                    position = note.position.Add(0, note.position.LPB * beatDiff, 0),
+                                    type = NoteTypes.Single,
+                                    attributes = note.attributes,
+                                    direction = note.direction,
+                                }
+                                : new Note()
+                                {
+                                    position = note.position.Add(0, note.position.LPB * beatDiff, 0),
+                                    type = note.type,
+                                    next = note.next.Add(0, note.next.LPB * beatDiff, 0),
+                                    prev = note.prev.Add(0, note.prev.LPB * beatDiff, 0),
+                                    attributes = note.attributes,
+                                    direction = note.direction
+                                })
                         .Do(note => copiedNotes.Add(note))
                         .Subscribe(note =>
                             (EditData.Notes.ContainsKey(note.position)

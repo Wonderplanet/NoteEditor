@@ -13,7 +13,7 @@ namespace NoteEditor.SoundEffect
         [SerializeField]
         AudioSource clapAudioSource;
 
-        void Awake()
+        void Start()
         {
             var editPresenter = EditNotesPresenter.Instance;
             var clapOffsetSamples = 1800;

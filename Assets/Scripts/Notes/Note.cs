@@ -7,24 +7,8 @@
         public NotePosition next = NotePosition.None;
         public NotePosition prev = NotePosition.None;
 
-        public Note(NotePosition position, NoteTypes type, NotePosition next, NotePosition prev)
-        {
-            this.position = position;
-            this.type = type;
-            this.next = next;
-            this.prev = prev;
-        }
-
-        public Note(NotePosition position, NoteTypes type)
-        {
-            this.position = position;
-            this.type = type;
-        }
-
-        public Note(NotePosition position)
-        {
-            this.position = position;
-        }
+        public NoteAttributes attributes = NoteAttributes.Normal;
+        public NoteDirection direction = NoteDirection.None;
 
         public Note(Note note)
         {
@@ -32,6 +16,8 @@
             this.type = note.type;
             this.next = note.next;
             this.prev = note.prev;
+            this.attributes = note.attributes;
+            this.direction = note.direction;
         }
 
         public Note() { }

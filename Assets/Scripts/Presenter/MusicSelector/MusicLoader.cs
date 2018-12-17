@@ -36,7 +36,7 @@ namespace NoteEditor.Presenter
                 else
                 {
                     EditData.Name.Value = fileName;
-                    //LoadEditData();
+                    LoadEditData();
                     Audio.OnLoad.OnNext(Unit.Default);
                 }
             }
@@ -44,11 +44,10 @@ namespace NoteEditor.Presenter
 
         void LoadEditData()
         {
-            var fileName = Path.ChangeExtension(EditData.Name.Value, "json");
-            var directoryPath = Path.Combine(Path.GetDirectoryName(MusicSelector.DirectoryPath.Value), "Notes");
-            var filePath = Path.Combine(directoryPath, fileName);
 
-            if (File.Exists(filePath))
+            var filePath = EditData.FileName.Value;
+
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
                 var json = File.ReadAllText(filePath, System.Text.Encoding.UTF8);
                 EditDataSerializer.Deserialize(json);

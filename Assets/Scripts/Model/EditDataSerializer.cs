@@ -91,14 +91,20 @@ namespace NoteEditor.Model
             note.LPB = noteObject.note.position.LPB;
             note.type = noteObject.note.type == NoteTypes.Long ? 2 : 1;
             note.notes = new List<MusicDTO.Note>();
+            note.attributes = (int)noteObject.note.attributes;
+            note.direction = (int)noteObject.note.direction;
             return note;
         }
 
         public static Note ToNoteObject(MusicDTO.Note musicNote)
         {
-            return new Note(
-                new NotePosition(musicNote.LPB, musicNote.num, musicNote.block),
-                musicNote.type == 1 ? NoteTypes.Single : NoteTypes.Long);
+            return new Note()
+            {
+                position = new NotePosition(musicNote.LPB, musicNote.num, musicNote.block),
+                type = musicNote.type == 1 ? NoteTypes.Single : NoteTypes.Long,
+                attributes = (NoteAttributes)musicNote.attributes,
+                direction = (NoteDirection)musicNote.direction
+            };
         }
     }
 }

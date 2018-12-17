@@ -25,7 +25,12 @@ namespace NoteEditor.Presenter
                 .Where(_ => !KeyInput.CtrlKey())
                 .Where(_ => !KeyInput.ShiftKey())
                 .SelectMany(_ => Observable.Range(0, EditData.MaxBlock.Value))
-                .Where(block => Input.GetKeyDown(Settings.NoteInputKeyCodes.Value[block]))
+                .Where(block =>
+                {
+                    if (Settings.NoteInputKeyCodes.Value != null && block < Settings.NoteInputKeyCodes.Value.Count)
+                        return Input.GetKeyDown(Settings.NoteInputKeyCodes.Value[block]);
+                    return false;
+                })
                 .Subscribe(block => EnterNote(block));
         }
 
@@ -36,7 +41,15 @@ namespace NoteEditor.Presenter
             var timeSamples = Audio.Source.timeSamples - EditData.OffsetSamples.Value + (Audio.IsPlaying.Value ? offset : 0);
             var beats = Mathf.RoundToInt(timeSamples / unitBeatSamples);
 
-            editPresenter.RequestForEditNote.OnNext(new Note(new NotePosition(EditData.LPB.Value, beats, block), EditState.NoteType.Value));
+            editPresenter
+                .RequestForEditNote
+                .OnNext(new Note()
+                {
+                    position = new NotePosition(EditData.LPB.Value, beats, block), 
+                    type = EditState.NoteType.Value,
+                    attributes = (NoteAttributes)EditState.AttributeType.Value,
+                    direction = (NoteDirection)EditState.DirectionVector.Value, 
+                });
         }
     }
 }

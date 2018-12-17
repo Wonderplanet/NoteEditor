@@ -3,6 +3,8 @@ using System.Collections;
 using NoteEditor.Model;
 using SFB;
 using System.IO;
+using System.Linq;
+using UniRx;
 
 namespace NoteEditor.Presenter
 {
@@ -19,7 +21,9 @@ namespace NoteEditor.Presenter
             var filePaths = StandaloneFileBrowser.OpenFilePanel("Select Edit Data", Settings.WorkSpacePath.Value, extensionFilters, false);
             if(filePaths.Length > 0)
             {
-                var json = File.ReadAllText(filePaths[0], System.Text.Encoding.UTF8);
+                var filePath = filePaths.First((arg) => !string.IsNullOrEmpty(arg));
+                EditData.FileName.Value = filePath;
+                var json = File.ReadAllText(filePath, System.Text.Encoding.UTF8);
                 EditDataSerializer.Deserialize(json);
             }
         }
