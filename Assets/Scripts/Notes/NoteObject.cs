@@ -15,12 +15,33 @@ namespace NoteEditor.Notes
         public ReactiveProperty<bool> isSelected = new ReactiveProperty<bool>();
         public Subject<Unit> LateUpdateObservable = new Subject<Unit>();
         public Subject<Unit> OnClickObservable = new Subject<Unit>();
-        public Color NoteColor { get { return noteColor_.Value; } }
+        public Color NoteColor 
+        {
+            get 
+            { 
+                if(isSelected.Value)
+                {
+                    return selectedStateColor;
+                }
+                if(note.attributes == NoteAttributes.Skill)
+                {
+                    return skillNoteColor;
+                }
+                if(note.direction == NoteDirection.Up)
+                {
+                    return swipeUpColor;
+                }
+
+                return note.type == NoteTypes.Long ? longNoteColor : singleNoteColor; 
+            } 
+        }
         ReactiveProperty<Color> noteColor_ = new ReactiveProperty<Color>();
 
         Color selectedStateColor = new Color(255 / 255f, 0 / 255f, 255 / 255f);
         Color singleNoteColor = new Color(175 / 255f, 255 / 255f, 78 / 255f);
         Color longNoteColor = new Color(0 / 255f, 255 / 255f, 255 / 255f);
+        Color skillNoteColor = new Color(244f / 255f, 249f / 255f, 173f / 255f);
+        Color swipeUpColor = new Color(249f / 255f, 173f / 255f, 206f / 255f);
         Color invalidStateColor = new Color(255 / 255f, 0 / 255f, 0 / 255f);
 
         ReactiveProperty<NoteTypes> noteType = new ReactiveProperty<NoteTypes>();
@@ -41,7 +62,10 @@ namespace NoteEditor.Notes
             disposable.Add(noteType.Where(_ => !isSelected.Value)
                 .Merge(isSelected.Select(_ => noteType.Value))
                 .Select(type => type == NoteTypes.Long)
-                .Subscribe(isLongNote => noteColor_.Value = isLongNote ? longNoteColor : singleNoteColor));
+                .Subscribe(isLongNote =>
+                {
+                    noteColor_.Value = isLongNote ? longNoteColor : singleNoteColor;
+                }));
 
             disposable.Add(isSelected.Where(selected => selected)
                 .Subscribe(_ => noteColor_.Value = selectedStateColor));
