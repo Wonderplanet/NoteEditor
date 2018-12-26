@@ -5,23 +5,23 @@ using UniRx;
 
 namespace NoteEditor.Model
 {
-    public class EditData : SingletonMonoBehaviour<EditData>
+    public class EditData
     {
-        ReactiveProperty<string> filename = new ReactiveProperty<string>();
+        static ReactiveProperty<string> filename = new ReactiveProperty<string>();
 
-        ReactiveProperty<string> name_ = new ReactiveProperty<string>();
-        ReactiveProperty<int> maxBlock_ = new ReactiveProperty<int>(5);
-        ReactiveProperty<int> LPB_ = new ReactiveProperty<int>(4);
-        ReactiveProperty<int> BPM_ = new ReactiveProperty<int>(120);
-        ReactiveProperty<int> offsetSamples_ = new ReactiveProperty<int>(0);
-        Dictionary<NotePosition, NoteObject> notes_ = new Dictionary<NotePosition, NoteObject>();
+        static ReactiveProperty<string> name_ = new ReactiveProperty<string>();
+        static ReactiveProperty<int> maxBlock_ = new ReactiveProperty<int>(5);
+        static ReactiveProperty<int> LPB_ = new ReactiveProperty<int>(4);
+        static ReactiveProperty<int> BPM_ = new ReactiveProperty<int>(120);
+        static ReactiveProperty<int> offsetSamples_ = new ReactiveProperty<int>(0);
+        static Dictionary<NotePosition, NoteObject> notes_ = new Dictionary<NotePosition, NoteObject>();
 
-        public static ReactiveProperty<string> FileName { get { return Instance.filename; } }
-        public static ReactiveProperty<string> Name { get { return Instance.name_; } }
-        public static ReactiveProperty<int> MaxBlock { get { return Instance.maxBlock_; } }
-        public static ReactiveProperty<int> LPB { get { return Instance.LPB_; } }
-        public static ReactiveProperty<int> BPM { get { return Instance.BPM_; } }
-        public static ReactiveProperty<int> OffsetSamples { get { return Instance.offsetSamples_; } }
-        public static Dictionary<NotePosition, NoteObject> Notes { get { return Instance.notes_; } }
+        public static ReactiveProperty<string> FileName { get { return filename; } }
+        public static ReactiveProperty<string> Name { get { return name_; } }
+        public static ReactiveProperty<int> MaxBlock { get { return maxBlock_; } }
+        public static ReactiveProperty<int> LPB { get { return LPB_; } }
+        public static ReactiveProperty<int> BPM { get { return BPM_; } }
+        public static ReactiveProperty<int> OffsetSamples { get { return offsetSamples_; } }
+        public static Dictionary<NotePosition, NoteObject> Notes { get { return notes_; } }
     }
 }
