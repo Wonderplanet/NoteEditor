@@ -9,7 +9,7 @@ namespace NoteEditor.DTO
         {
             public string name;
             public int maxBlock;
-            public int BPM;
+            public float BPM;
             public int offset;
             public List<Note> notes;
         }

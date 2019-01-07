@@ -13,7 +13,7 @@ namespace NoteEditor.Notes
             this.block = block;
         }
 
-        public int ToSamples(int frequency, int BPM)
+        public int ToSamples(int frequency, float BPM)
         {
             return Mathf.FloorToInt(num * (frequency * 60f / BPM / LPB));
         }

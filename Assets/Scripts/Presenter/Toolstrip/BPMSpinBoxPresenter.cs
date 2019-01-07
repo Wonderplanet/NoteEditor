@@ -3,9 +3,9 @@ using UniRx;
 
 namespace NoteEditor.Presenter
 {
-    public class BPMSpinBoxPresenter : SpinBoxPresenterBase
+    public class BPMSpinBoxPresenter : FloatSpinBoxPresenterBase
     {
-        protected override ReactiveProperty<int> GetReactiveProperty()
+        protected override ReactiveProperty<float> GetReactiveProperty()
         {
             return EditData.BPM;
         }
