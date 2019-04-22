@@ -18,11 +18,32 @@ namespace NoteEditor.Presenter
                 var note = noteObj.note;
                 EditData.Notes.Remove(position);
                 position.num -= position.LPB;
-                note.position = position;
+                note.position = position; 
+                if (note.type == NoteTypes.Long)
+                {
+                    var currNote = note;
+                    while(currNote != null && EditData.Notes.ContainsKey(currNote.next))
+                    {
+                        var subNoteObj = EditData.Notes[currNote.next];
+                        var subNote = subNoteObj.note;
+                        var subPos = subNote.position;
+                        EditData.Notes.Remove(subPos);
+                        subPos.num -= position.LPB;
+                        currNote.next = subPos;
+                        subNote.prev = currNote.position; 
+                        subNoteObj = new NoteObject();
+                        subNoteObj.SetState(subNote);
+                        subNoteObj.Init();
+                        EditData.Notes[subPos] = subNoteObj;
+                        currNote = subNote;
+                    }
+                }
+
                 var noteObject = new NoteObject();
                 noteObject.SetState(note);
                 noteObject.Init();
                 EditData.Notes[position] = noteObj;
+
             }
         }
 
@@ -36,6 +57,26 @@ namespace NoteEditor.Presenter
                 EditData.Notes.Remove(position);
                 position.num += position.LPB;
                 note.position = position;
+                if (note.type == NoteTypes.Long)
+                {
+                    var currNote = note;
+                    while (currNote != null && EditData.Notes.ContainsKey(currNote.next))
+                    {
+                        var subNoteObj = EditData.Notes[currNote.next];
+                        var subNote = subNoteObj.note;
+                        var subPos = subNote.position;
+                        EditData.Notes.Remove(subPos);
+                        subPos.num += position.LPB;
+                        currNote.next = subPos;
+                        subNote.prev = currNote.position;
+                        subNoteObj = new NoteObject();
+                        subNoteObj.SetState(subNote);
+                        subNoteObj.Init();
+                        EditData.Notes[subPos] = subNoteObj;
+                        currNote = subNote;
+                    }
+                }
+
                 var noteObject = new NoteObject();
                 noteObject.SetState(note);
                 noteObject.Init();
