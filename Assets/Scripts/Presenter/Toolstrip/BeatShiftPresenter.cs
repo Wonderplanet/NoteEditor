@@ -7,81 +7,68 @@ namespace NoteEditor.Presenter
 {
     using Model;
     using Notes;
+    using DTO;
     public class BeatShiftPresenter : MonoBehaviour
     {
         public void ShiftNotesToLeft()
         {
-            var notes = EditData.Notes.Values.ToList();
-            foreach(var noteObj in notes)
+            var jsonString = EditDataSerializer.Serialize();
+
+            var editData = UnityEngine.JsonUtility.FromJson<MusicDTO.EditData>(jsonString);
+
+            foreach(var note in editData.notes)
             {
-                var position = noteObj.note.position;
-                var note = noteObj.note;
-                EditData.Notes.Remove(position);
-                position.num -= position.LPB;
-                note.position = position; 
-                if (note.type == NoteTypes.Long)
+                note.num -= note.LPB;
+                if(note.type != 1)
                 {
-                    var currNote = note;
-                    while(currNote != null && EditData.Notes.ContainsKey(currNote.next))
+                    foreach(var subnote in note.notes)
                     {
-                        var subNoteObj = EditData.Notes[currNote.next];
-                        var subNote = subNoteObj.note;
-                        var subPos = subNote.position;
-                        EditData.Notes.Remove(subPos);
-                        subPos.num -= position.LPB;
-                        currNote.next = subPos;
-                        subNote.prev = currNote.position; 
-                        subNoteObj = new NoteObject();
-                        subNoteObj.SetState(subNote);
-                        subNoteObj.Init();
-                        EditData.Notes[subPos] = subNoteObj;
-                        currNote = subNote;
+                        subnote.num -= note.LPB;
                     }
                 }
-
-                var noteObject = new NoteObject();
-                noteObject.SetState(note);
-                noteObject.Init();
-                EditData.Notes[position] = noteObj;
-
             }
+
+            jsonString = UnityEngine.JsonUtility.ToJson(editData);
+
+
+            foreach (var note in EditData.Notes.Values)
+            {
+                note.Dispose();
+            }
+
+            EditData.Notes.Clear();
+
+            EditDataSerializer.Deserialize(jsonString);
         }
 
         public void ShiftNotesToRight()
         {
-            var notes = EditData.Notes.Values.ToList();
-            foreach (var noteObj in notes)
+            var jsonString = EditDataSerializer.Serialize();
+
+            var editData = UnityEngine.JsonUtility.FromJson<MusicDTO.EditData>(jsonString);
+
+            foreach (var note in editData.notes)
             {
-                var position = noteObj.note.position;
-                var note = noteObj.note;
-                EditData.Notes.Remove(position);
-                position.num += position.LPB;
-                note.position = position;
-                if (note.type == NoteTypes.Long)
+                note.num += note.LPB;
+                if (note.type != 1)
                 {
-                    var currNote = note;
-                    while (currNote != null && EditData.Notes.ContainsKey(currNote.next))
+                    foreach (var subnote in note.notes)
                     {
-                        var subNoteObj = EditData.Notes[currNote.next];
-                        var subNote = subNoteObj.note;
-                        var subPos = subNote.position;
-                        EditData.Notes.Remove(subPos);
-                        subPos.num += position.LPB;
-                        currNote.next = subPos;
-                        subNote.prev = currNote.position;
-                        subNoteObj = new NoteObject();
-                        subNoteObj.SetState(subNote);
-                        subNoteObj.Init();
-                        EditData.Notes[subPos] = subNoteObj;
-                        currNote = subNote;
+                        subnote.num += note.LPB;
                     }
                 }
-
-                var noteObject = new NoteObject();
-                noteObject.SetState(note);
-                noteObject.Init();
-                EditData.Notes[position] = noteObj;
             }
+
+            jsonString = UnityEngine.JsonUtility.ToJson(editData);
+
+            foreach (var note in EditData.Notes.Values)
+            {
+                note.Dispose();
+            }
+
+            EditData.Notes.Clear();
+
+            EditDataSerializer.Deserialize(jsonString);
         }
     }
 }
