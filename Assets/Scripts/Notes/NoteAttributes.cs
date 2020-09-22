@@ -6,5 +6,6 @@ namespace NoteEditor.Notes
         Normal = 0,
         Skill = 1,
         Drop = 2,
+        LeaderSkill = 3,
     }
 }
