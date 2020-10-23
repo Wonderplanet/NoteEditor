@@ -15,25 +15,29 @@ namespace NoteEditor.Notes
         public ReactiveProperty<bool> isSelected = new ReactiveProperty<bool>();
         public Subject<Unit> LateUpdateObservable = new Subject<Unit>();
         public Subject<Unit> OnClickObservable = new Subject<Unit>();
-        public Color NoteColor 
+        public Color NoteColor
         {
-            get 
-            { 
-                if(isSelected.Value)
+            get
+            {
+                if (isSelected.Value)
                 {
                     return selectedStateColor;
                 }
-                if(note.attributes == NoteAttributes.Skill)
+                if (note.attributes == NoteAttributes.Skill)
                 {
                     return skillNoteColor;
                 }
-                if(note.direction == NoteDirection.Up)
+                else if (note.attributes == NoteAttributes.LeaderSkill)
+                {
+                    return leaderSkillNoteColor;
+                }
+                if (note.direction == NoteDirection.Up)
                 {
                     return swipeUpColor;
                 }
 
-                return note.type == NoteTypes.Long ? longNoteColor : singleNoteColor; 
-            } 
+                return note.type == NoteTypes.Long ? longNoteColor : singleNoteColor;
+            }
         }
         ReactiveProperty<Color> noteColor_ = new ReactiveProperty<Color>();
 
@@ -41,6 +45,7 @@ namespace NoteEditor.Notes
         Color singleNoteColor = new Color(175 / 255f, 255 / 255f, 78 / 255f);
         Color longNoteColor = new Color(0 / 255f, 255 / 255f, 255 / 255f);
         Color skillNoteColor = new Color(244f / 255f, 249f / 255f, 173f / 255f);
+        Color leaderSkillNoteColor = new Color(240f / 255f, 30f / 255f, 30f / 255f);
         Color swipeUpColor = new Color(249f / 255f, 173f / 255f, 206f / 255f);
         Color invalidStateColor = new Color(255 / 255f, 0 / 255f, 0 / 255f);
 
@@ -78,10 +83,10 @@ namespace NoteEditor.Notes
                 .Where(editType => editType == noteType.Value)
                 .Subscribe(_ => editPresenter.RequestForRemoveNote.OnNext(note)));
 
-            disposable.Add(mouseDownObservable.Subscribe(_ => 
+            disposable.Add(mouseDownObservable.Subscribe(_ =>
             {
-                EditState.DirectionVector.Value = (int)(note.direction); 
-                EditState.AttributeType.Value = (int)(note.attributes); 
+                EditState.DirectionVector.Value = (int)(note.direction);
+                EditState.AttributeType.Value = (int)(note.attributes);
             }));
 
             disposable.Add(mouseDownObservable.Where(editType => editType == NoteTypes.Long)
@@ -105,9 +110,9 @@ namespace NoteEditor.Notes
 
                         editPresenter
                             .RequestForRemoveNote
-                            .OnNext(new Note() 
-                            { 
-                                position = note.position, 
+                            .OnNext(new Note()
+                            {
+                                position = note.position,
                                 type = EditState.NoteType.Value,
                                 next = note.next,
                                 prev = note.prev,
